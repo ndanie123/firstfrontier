@@ -20,6 +20,9 @@ export function SiteHeader() {
           <Link href="/divisions" className="transition-colors hover:text-foreground">
             Divisions
           </Link>
+          <Link href="/map" className="transition-colors hover:text-foreground">
+            Map
+          </Link>
         </nav>
       </div>
     </header>

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { geoMercator, geoPath } from "d3-geo";
 import type { FeatureCollection, Geometry } from "geojson";
 import {
@@ -17,6 +18,7 @@ import {
   partyColor,
   CLASSIFICATION_LEGEND,
   PARTY_LEGEND,
+  type ThemeMode,
 } from "@/lib/map-colors";
 import { formatArea, formatCurrency, formatNumber } from "@/lib/format";
 import { METRIC_LABELS } from "@/lib/supabase/types";
@@ -63,6 +65,15 @@ function formatValue(key: string, value: number | null): string {
 
 export function ElectorateMap({ divisions }: { divisions: DivisionRow[] }) {
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  // Match next-themes' documented hydration-mismatch fix: resolvedTheme is
+  // resolved synchronously on the client before hydration (from
+  // localStorage/system preference), which differs from the server's
+  // themeless render, so anything colored by it must wait for mount.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+  const mode: ThemeMode = mounted && resolvedTheme === "dark" ? "dark" : "light";
   const [geojson, setGeojson] = useState<FeatureCollection<Geometry> | null>(null);
   const [colorBy, setColorBy] = useState("member_party");
   const [hovered, setHovered] = useState<{ id: string; x: number; y: number } | null>(null);
@@ -101,16 +112,16 @@ export function ElectorateMap({ divisions }: { divisions: DivisionRow[] }) {
     if (!isNumeric) return null;
     const values = divisions.map((d) => valueFor(d, colorBy)).filter((v): v is number => v !== null);
     if (values.length === 0) return null;
-    return makeSequentialScale(Math.min(...values), Math.max(...values), "light");
-  }, [divisions, colorBy, isNumeric]);
+    return makeSequentialScale(Math.min(...values), Math.max(...values), mode);
+  }, [divisions, colorBy, isNumeric, mode]);
 
   function colorForDivision(id: string): string {
     const d = byId.get(id);
-    if (!d) return "#e1e0d9";
-    if (colorBy === "member_party") return partyColor(d.member_party, "light");
-    if (colorBy === "classification") return classificationColor(d.classification, "light");
+    if (!d) return "var(--muted)";
+    if (colorBy === "member_party") return partyColor(d.member_party, mode);
+    if (colorBy === "classification") return classificationColor(d.classification, mode);
     const v = valueFor(d, colorBy);
-    if (v === null || !scale) return "#e1e0d9";
+    if (v === null || !scale) return "var(--muted)";
     return scale(v);
   }
 
@@ -157,8 +168,7 @@ export function ElectorateMap({ divisions }: { divisions: DivisionRow[] }) {
                 <path
                   key={id || i}
                   d={d}
-                  fill={colorForDivision(id)}
-                  style={{ stroke: "var(--card)", strokeWidth: 0.75 }}
+                  style={{ fill: colorForDivision(id), stroke: "var(--card)", strokeWidth: 0.75 }}
                   className="cursor-pointer transition-opacity hover:opacity-80"
                   onMouseMove={(e) => {
                     const rect = containerRef.current?.getBoundingClientRect();
@@ -190,7 +200,7 @@ export function ElectorateMap({ divisions }: { divisions: DivisionRow[] }) {
         )}
       </div>
 
-      <Legend colorBy={colorBy} scale={scale} divisions={divisions} />
+      <Legend colorBy={colorBy} scale={scale} divisions={divisions} mode={mode} />
     </div>
   );
 }
@@ -199,10 +209,12 @@ function Legend({
   colorBy,
   scale,
   divisions,
+  mode,
 }: {
   colorBy: string;
   scale: ((v: number) => string) | null;
   divisions: DivisionRow[];
+  mode: ThemeMode;
 }) {
   if (colorBy === "member_party") {
     return (
@@ -211,7 +223,7 @@ function Legend({
           <div key={party} className="flex items-center gap-2">
             <span
               className="h-3 w-3 rounded-sm border border-border/50"
-              style={{ backgroundColor: color.light }}
+              style={{ backgroundColor: color[mode] }}
             />
             <span className="text-muted-foreground">{party}</span>
           </div>
@@ -227,7 +239,7 @@ function Legend({
           <div key={classification} className="flex items-center gap-2">
             <span
               className="h-3 w-3 rounded-sm border border-border/50"
-              style={{ backgroundColor: color.light }}
+              style={{ backgroundColor: color[mode] }}
             />
             <span className="text-muted-foreground">{classification}</span>
           </div>

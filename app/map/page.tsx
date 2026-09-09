@@ -33,7 +33,7 @@ export default async function MapPage() {
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-12">
       <div className="mb-8 flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Map</h1>
+        <h1 className="font-comic text-4xl tracking-wide">Map</h1>
         <p className="text-muted-foreground">
           Victoria&rsquo;s 38 federal electoral divisions. Hover a division for details,
           click to see its full profile.

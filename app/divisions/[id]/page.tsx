@@ -37,7 +37,7 @@ export default async function DivisionPage({ params }: PageProps<"/divisions/[id
 
       <div className="mb-8 flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-4xl font-semibold tracking-tight">{division.name}</h1>
+          <h1 className="font-comic text-5xl tracking-wide">{division.name}</h1>
           <PartyBadge party={division.member_party} />
         </div>
         <p className="text-lg text-muted-foreground">

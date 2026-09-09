@@ -14,7 +14,7 @@ export default async function DivisionsPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-12">
       <div className="mb-8 flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Divisions</h1>
+        <h1 className="font-comic text-4xl tracking-wide">Divisions</h1>
         <p className="text-muted-foreground">
           All 38 Commonwealth Electoral Divisions in Victoria.
         </p>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PartyBadge } from "@/components/party-badge";
 import { SetupNotice } from "@/components/setup-notice";
+import { FunFacts } from "@/components/fun-facts";
 import { getDivisions, isSupabaseConfigured } from "@/lib/supabase";
 import { formatArea, formatNumber } from "@/lib/format";
 
@@ -23,11 +24,12 @@ export default async function Home() {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6">
-      <section className="flex flex-col gap-6 py-20 sm:py-28">
+      <section className="relative flex flex-col gap-6 overflow-hidden py-20 sm:py-28">
+        <div className="comic-burst" aria-hidden />
         <span className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
           38 divisions · 1 state
         </span>
-        <h1 className="max-w-2xl text-4xl font-semibold tracking-tight sm:text-6xl">
+        <h1 className="comic-ink-text font-comic max-w-2xl text-5xl leading-tight tracking-wide sm:text-7xl">
           Every federal electorate in Victoria, in one place.
         </h1>
         <p className="max-w-xl text-lg text-muted-foreground">
@@ -75,6 +77,8 @@ export default async function Home() {
           </Card>
         </section>
       )}
+
+      <FunFacts />
     </div>
   );
 }

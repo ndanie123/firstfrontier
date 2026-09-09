@@ -10,6 +10,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-geist-sans);
+  --font-comic: var(--font-comic);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -81,6 +82,14 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Comic-book texture tokens */
+  --comic-dot: oklch(0.145 0 0 / 8%);
+  --comic-ink: oklch(0.145 0 0);
+  --comic-panel-shadow: 4px 4px 0 0 var(--comic-ink);
+  --comic-burst-1: oklch(0.62 0.19 255 / 22%); /* blue */
+  --comic-burst-2: oklch(0.68 0.19 355 / 20%); /* magenta */
+  --comic-burst-3: oklch(0.8 0.16 80 / 18%); /* yellow */
 }
 
 .dark {
@@ -115,6 +124,14 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Comic-book texture tokens */
+  --comic-dot: oklch(0.985 0 0 / 10%);
+  --comic-ink: oklch(0.985 0 0);
+  --comic-panel-shadow: 4px 4px 0 0 var(--comic-ink);
+  --comic-burst-1: oklch(0.62 0.19 255 / 30%);
+  --comic-burst-2: oklch(0.68 0.19 355 / 26%);
+  --comic-burst-3: oklch(0.8 0.16 80 / 22%);
 }
 
 @layer base {
@@ -127,4 +144,51 @@
   html {
     @apply font-sans;
   }
+}
+
+/* Comic-book / Spiderverse-inspired background texture: a halftone dot
+   grid printed across the whole page, like offset-printed comic paper. */
+.comic-bg {
+  background-image: radial-gradient(circle, var(--comic-dot) 1.4px, transparent 1.4px);
+  background-size: 20px 20px;
+  background-attachment: fixed;
+}
+
+/* A colorful halftone "ink burst" behind hero content - three overlapping
+   dot-pattern color fields (blue/magenta/yellow), fading out at the edges. */
+.comic-burst {
+  position: absolute;
+  inset: -10% -5%;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, var(--comic-burst-1) 2px, transparent 2px),
+    radial-gradient(circle, var(--comic-burst-2) 2px, transparent 2px),
+    radial-gradient(circle, var(--comic-burst-3) 2px, transparent 2px);
+  background-size:
+    26px 26px,
+    26px 26px,
+    26px 26px;
+  background-position:
+    0 0,
+    9px 13px,
+    18px 4px;
+  mask-image: radial-gradient(ellipse 60% 70% at 30% 20%, black 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 30% 20%, black 0%, transparent 75%);
+}
+
+/* Comic-panel chrome: bold ink border + hard offset shadow instead of a
+   soft drop shadow, like a panel cut from a printed page. */
+.comic-panel {
+  border: 2px solid var(--comic-ink);
+  box-shadow: var(--comic-panel-shadow);
+}
+
+/* CMYK-fringe "glitch" text, evoking print misregistration. Apply to large
+   display headings only - it's illegible at body-text sizes. */
+.comic-ink-text {
+  position: relative;
+  text-shadow:
+    2px 0 0 oklch(0.7 0.19 200 / 55%),
+    -2px 0 0 oklch(0.65 0.22 15 / 55%);
 }

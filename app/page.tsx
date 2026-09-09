@@ -35,7 +35,7 @@ export default async function Home() {
           Divisions in Victoria — sourced from the AEC and ABS.
         </p>
         <div className="flex gap-3">
-          <Button size="lg" render={<Link href="/divisions" />}>
+          <Button size="lg" nativeButton={false} render={<Link href="/divisions" />}>
             Browse divisions
           </Button>
         </div>

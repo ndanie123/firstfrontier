@@ -69,6 +69,13 @@ export function ElectorateMap({ divisions }: { divisions: DivisionRow[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // public/data/vic-divisions.geojson has its ring winding reversed from
+    // the RFC 7946 CCW convention the ABS export used. d3-geo's fitSize
+    // (spherical geoBounds) needs the opposite winding for polygons at this
+    // longitude/latitude, otherwise it measures the ring's complement and
+    // computes a ~600x-too-small scale (every division collapses to a
+    // speck). If this file is ever regenerated from source, reverse every
+    // ring's point order again before shipping it.
     fetch("/data/vic-divisions.geojson")
       .then((r) => r.json())
       .then(setGeojson)

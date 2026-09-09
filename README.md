@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Electorate Atlas — Victoria
 
-## Getting Started
+A Next.js + Supabase site for exploring all 38 federal (Commonwealth) electoral
+divisions in Victoria: member, party, area, and 2021 Census demographics for
+each seat.
 
-First, run the development server:
+- **Framework:** Next.js (App Router, TypeScript)
+- **UI:** Tailwind CSS + shadcn/ui
+- **Database:** Supabase (Postgres)
+- **Data sources:** Australian Electoral Commission (boundaries, members,
+  enrolment) and ABS 2021 Census QuickStats (demographics)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Schema
+
+```
+divisions(id, name, state, area_km2, classification, member_name, member_party, electors)
+division_metrics(division_id -> divisions.id, metric_key, metric_value, metric_value_text, unit, source, year)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Defined in [`supabase/schema.sql`](supabase/schema.sql), including row-level
+security with a public read-only policy (writes go through the service role
+key only, via the seed script).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Local setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Install dependencies: `npm install`
+2. Create a Supabase project, then copy `.env.local.example` to `.env.local`
+   and fill in your project's URL, anon key, service role key, and database
+   connection string (Project Settings → Data API / Database).
+3. Create the tables: `npm run db:schema`
+4. Load the dataset: `npm run seed`
+5. Run the app: `npm run dev` — open [http://localhost:3000](http://localhost:3000)
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployed on Vercel, connected to this GitHub repo. Only the two
+`NEXT_PUBLIC_*` environment variables need to be set in Vercel — the service
+role key and database URL are only used locally for schema/seed scripts and
+are never read at runtime.
